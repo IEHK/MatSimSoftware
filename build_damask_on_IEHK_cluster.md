@@ -1,7 +1,7 @@
 # Build DAMASK v2.0.2 on the internal cluster of IEHK
 
-DAMASK v2.0.2 depends on [PETSc 3.9.2](http://www.fftw.org/fftw-3.3.7.tar.gz) and
-[FFTW 3.3.x](http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.9.2.tar.gz).
+DAMASK v2.0.2 depends on [PETSc 3.9.x](http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.9.4.tar.gz) and
+[FFTW 3.3.x](http://www.fftw.org/fftw-3.3.8.tar.gz).
 You should first download tar balls of these packages together with DAMASK, and extract all of them.
 Then run the following script in BASH.
 
@@ -13,18 +13,23 @@ set -e
 module load intel
 module load openmpi
 
-#wget http://www.fftw.org/fftw-3.3.7.tar.gz && tar -xf fftw-*.tar.gz && rm fftw-*.tar.gz
-#wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.9.2.tar.gz && tar -xf petsc-*.tar.gz && rm petsc-*.tar.gz
+#wget http://www.fftw.org/fftw-3.3.8.tar.gz && tar -xf fftw-*.tar.gz && rm fftw-*.tar.gz
+#wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.9.4.tar.gz && tar -xf petsc-*.tar.gz && rm petsc-*.tar.gz
+#wget https://damask.mpie.de/pub/Download/Current/DAMASK-2.0.2.tar.xz && tar -xf DAMASK-*.tar.xz
 
-FFTWROOT=$(cd  fftw*  && pwd)
-PETSCROOT=$(cd petsc* && pwd)
-INTELROOT=$(cd $(dirname $(which ifort))/../ && pwd)
-OMPIROOT=$( cd $(dirname $(which mpicc))/../ && pwd)
+FFTWROOT=$(  cd fftw*  && pwd)
+PETSCROOT=$( cd petsc* && pwd)
+INTELROOT=$( which ifort | sed -e 's:bin/\w*/*ifort::' )
+OMPIROOT=$(  which mpicc | sed -e 's:bin/\w*/*mpicc::' )
+
 export PETSC_ARCH=linux-gnu-intel
+
+ls "$INTELROOT"/mkl "$OMPIROOT" "$FFTWROOT" "$PETSCROOT" > /dev/null
 
 function build_petsc () {(
     cd petsc-*/
     unset PETSC_DIR
+    mkdir -p "$PETSC_ARCH"
     ./configure PETSC_ARCH=$PETSC_ARCH \
          --with-blaslapack-dir="$INTELROOT"/mkl \
          --with-mpi-dir="$OMPIROOT" \
