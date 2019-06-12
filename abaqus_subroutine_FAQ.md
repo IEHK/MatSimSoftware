@@ -20,3 +20,14 @@ The symbol `_intel_fast_memmove` is defined in `libirc.so` with version >= 14.0 
 [1]: https://software.intel.com/zh-cn/forums/intel-fortran-compiler-for-linux-and-mac-os-x/topic/591214
 [2]: http://www.opal-rt.com/KMP/index.php?/article/AA-00609/0/Undefined-reference-to-_intel_fast_memset-build-error-related-to-rte_delay.html
 
+### MPI_init error with cpus > 1
+
+Command line option `cpus=X` where X>1 causes MPI_init errors in abaqus/2017 on ITC cluster.
+
+#### Cause
+
+The default parallelization mode of abaqus 2017 on ITC is MPI.
+
+#### Solution
+
+Set the option `mp_mode=THREADS` according to the [manuel](https://abaqus-docs.mit.edu/2017/English/SIMACAEEXCRefMap/simaexc-c-envfile.htm)
